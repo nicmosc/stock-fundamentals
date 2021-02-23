@@ -16,7 +16,7 @@
     }
   },
   "lint-staged": {
-    "*.{ts}": "eslint --format node_modules/eslint-formatter-pretty --max-warnings=0 --config .eslintrc.js"
+    "*.{ts}": "eslint --format node_modules/eslint-formatter-pretty --max-warnings=0"
   },
   "devDependencies": {
     "@types/express": "^4.17.11",
