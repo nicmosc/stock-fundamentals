@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint --ext ts --format node_modules/eslint-formatter-pretty src/",
     "start": "ts-node-dev src/index.ts"
   },
   "keywords": [],
