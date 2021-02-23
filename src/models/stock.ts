@@ -1,8 +1,9 @@
 import mongoose, { Document, Model } from 'mongoose';
 
 interface StockType {
-  ticker: string;
-  companyName?: string;
+  symbol: string;
+  name: string;
+  ignored?: boolean;
 }
 
 interface StockDocument extends Document, StockType {}
@@ -12,12 +13,17 @@ interface StockModelInterface extends Model<StockDocument> {
 }
 
 const stockSchema = new mongoose.Schema({
-  ticker: {
+  symbol: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  name: {
     type: String,
     required: true,
   },
-  companyName: {
-    type: String,
+  ignored: {
+    type: Boolean,
     required: false,
   },
 });
