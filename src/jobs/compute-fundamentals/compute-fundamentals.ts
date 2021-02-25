@@ -97,9 +97,6 @@ export async function computeFundamentals() {
   await connectToServer();
 
   const symbols = await Symbol.find();
-
-  console.log(symbols);
-
   if (symbols == null) return;
 
   for (const symbol of symbols) {
@@ -126,12 +123,25 @@ export async function computeFundamentals() {
       const stockWithStats = computeStock(symbol, rawData!);
       const hasGoodFundamentals = fineFilter(stockWithStats);
 
+      console.log(stockWithStats);
+
       if (hasGoodFundamentals) {
-        // Save it
-        await Stock.create(stockWithStats);
+        // Save it or create if it doesnt exist
+        const stock = await Stock.findOne({ symbol: stockWithStats.symbol });
+        if (stock != null) {
+          await Stock.findByIdAndUpdate(stock, stockWithStats);
+        } else {
+          try {
+            await Stock.create(stockWithStats);
+          } catch (error) {
+            console.error(
+              `Invalid data. Could not save stock ${stockWithStats.symbol} (${stockWithStats.name})`,
+            );
+          }
+        }
       } else {
         // If fundamentals are bad, delete if exists
-        await Stock.findByIdAndDelete(stockWithStats);
+        // await Stock.findByIdAndDelete(stockWithStats);
       }
     }
   }

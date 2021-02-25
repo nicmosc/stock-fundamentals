@@ -34,6 +34,7 @@ const stockSchema = new mongoose.Schema({
     ROIC: Number,
     est10YearEPS: Number,
     est10thYearPrice: Number,
+    currentPrice: Number,
   },
 });
 

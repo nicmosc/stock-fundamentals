@@ -21,7 +21,11 @@ export function coarseFilter(stockData: YahooData): boolean {
 
   hasEnoughData = hasEnoughData && earningsTrend != null && earningsTrend.length > 0;
 
-  hasEnoughData = hasEnoughData && financialData != null && financialData.revenueGrowth != null;
+  hasEnoughData =
+    hasEnoughData &&
+    financialData != null &&
+    financialData.revenueGrowth != null &&
+    financialData.currentPrice != null;
 
   hasEnoughData =
     hasEnoughData &&
@@ -49,5 +53,12 @@ export function coarseFilter(stockData: YahooData): boolean {
  */
 
 export function fineFilter(stock: Stock): boolean {
-  return false;
+  let hasHealthyStats = true;
+
+  hasHealthyStats = hasHealthyStats && stock.stats.profitMargin > 0;
+  hasHealthyStats = hasHealthyStats && stock.stats.currentPrice > 5; // TODO handle other than USD
+  hasHealthyStats = hasHealthyStats && stock.stats.revenueGrowth > 0.1;
+  hasHealthyStats = hasHealthyStats && stock.stats.ROIC > 0.1;
+
+  return hasHealthyStats;
 }

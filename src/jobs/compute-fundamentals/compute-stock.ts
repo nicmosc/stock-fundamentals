@@ -58,15 +58,20 @@ export function computeStock(symbol: Symbol, data: YahooData): Stock {
       : Math.min(estimatedGrowthRate, computedGrowthRate);
 
   const forwardPE = data.keyStats?.forwardPE;
-  const PE = forwardPE == null ? growthRate * 2 : Math.min(growthRate * 2, forwardPE.raw);
+  const PE =
+    forwardPE == null ? growthRate * 2 * 100 : Math.min(growthRate * 2 * 100, forwardPE.raw);
 
-  const est10YearEPS = [...Array(10)].reduce((memo) => memo * growthRate, EPS);
+  const est10YearEPS = [...Array(10)].reduce((memo) => memo + memo * growthRate, EPS);
   const est10thYearPrice = est10YearEPS * PE;
 
   return {
     symbol: symbol.symbol,
     name: symbol.name,
-    profile: data.profile,
+    profile: {
+      country: data.profile.country,
+      sector: data.profile.sector,
+      industry: data.profile.industry,
+    },
     stats: {
       revenueGrowth: data.financialData!.revenueGrowth!.raw,
       PE,
@@ -78,6 +83,7 @@ export function computeStock(symbol: Symbol, data: YahooData): Stock {
       ROIC,
       est10YearEPS,
       est10thYearPrice,
+      currentPrice: data.financialData!.currentPrice.raw,
     },
   };
 }
