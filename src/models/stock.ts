@@ -1,10 +1,6 @@
 import mongoose, { Document, Model } from 'mongoose';
 
-interface StockType {
-  symbol: string;
-  name: string;
-  ignored?: boolean; // These are stocks for which we can't get data
-}
+import { Stock as StockType } from '../types';
 
 interface StockDocument extends Document, StockType {}
 
@@ -22,9 +18,22 @@ const stockSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  ignored: {
-    type: Boolean,
-    required: false,
+  profile: {
+    country: String,
+    industry: String,
+    sector: String,
+  },
+  stats: {
+    revenueGrowth: Number,
+    profitMargin: Number,
+    EPS: Number,
+    growthRate: Number,
+    PE: Number,
+    debtToEquity: Number,
+    FCFYield: Number,
+    ROIC: Number,
+    est10YearEPS: Number,
+    est10thYearPrice: Number,
   },
 });
 

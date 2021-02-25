@@ -60,6 +60,9 @@ export function computeStock(symbol: Symbol, data: YahooData): Stock {
   const forwardPE = data.keyStats?.forwardPE;
   const PE = forwardPE == null ? growthRate * 2 : Math.min(growthRate * 2, forwardPE.raw);
 
+  const est10YearEPS = [...Array(10)].reduce((memo) => memo * growthRate, EPS);
+  const est10thYearPrice = est10YearEPS * PE;
+
   return {
     symbol: symbol.symbol,
     name: symbol.name,
@@ -73,6 +76,8 @@ export function computeStock(symbol: Symbol, data: YahooData): Stock {
       FCFYield,
       debtToEquity,
       ROIC,
+      est10YearEPS,
+      est10thYearPrice,
     },
   };
 }

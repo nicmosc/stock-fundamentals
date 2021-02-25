@@ -1,6 +1,6 @@
 import urlJoin from 'url-join';
 
-import { Symbol } from '~/models';
+import { Stock, Symbol } from '~/models';
 import {
   BalanceSheet,
   CashflowStatement,
@@ -108,7 +108,14 @@ export async function computeFundamentals() {
       continue;
     } else {
       // Get new data and save it
+      const timeStart = Date.now();
       const rawData = await getYahooRawData(symbol.symbol);
+      const timeEnd = Date.now();
+      const timeUntil1000 = 1000 - (timeEnd - timeStart);
+      if (timeUntil1000 > 0) {
+        await timeout(timeUntil1000); // Required by Yahoo API limits
+      }
+
       const hasEnoughData = rawData != null ? coarseFilter(rawData) : false;
 
       if (!hasEnoughData) {
@@ -120,10 +127,12 @@ export async function computeFundamentals() {
       const hasGoodFundamentals = fineFilter(stockWithStats);
 
       if (hasGoodFundamentals) {
-        // Compute necessary data and save it
+        // Save it
+        await Stock.create(stockWithStats);
+      } else {
+        // If fundamentals are bad, delete if exists
+        await Stock.findByIdAndDelete(stockWithStats);
       }
-
-      await timeout(1000); // Required by Yahoo API limits
     }
   }
 
