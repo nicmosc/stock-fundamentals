@@ -3,7 +3,7 @@ import mongoose, { Document, Model } from 'mongoose';
 interface StockType {
   symbol: string;
   name: string;
-  ignored?: boolean;
+  ignored?: boolean; // These are stocks for which we can't get data
 }
 
 interface StockDocument extends Document, StockType {}

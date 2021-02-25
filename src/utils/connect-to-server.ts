@@ -7,6 +7,7 @@ export function connectToServer() {
       useCreateIndex: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
     },
     () => {
       console.log('connected af');

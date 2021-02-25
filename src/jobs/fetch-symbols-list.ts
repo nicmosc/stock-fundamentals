@@ -1,12 +1,12 @@
-import { Stock } from '~/models';
+import { Symbol } from '~/models';
 import { TwelveData } from '~/types';
 import { connectToServer, disconnectFromServer } from '~/utils';
 
 export const exchanges = ['NYSE', 'NASDAQ', 'XLON', 'EURONEXT', 'TSX', 'XETR', 'OMX', 'XASX'];
 
-export async function fetchStocksList(): Promise<Array<TwelveData> | undefined> {
+export async function fetchSymbolsList(): Promise<Array<TwelveData> | undefined> {
   // get from api
-  const stocks = [
+  const symbols = [
     { symbol: 'AGFS', name: 'Example 1' },
     { symbol: 'DBDR', name: 'Example 2' },
     { symbol: 'TSLA', name: 'Tesla' },
@@ -20,16 +20,16 @@ export async function fetchStocksList(): Promise<Array<TwelveData> | undefined> 
   await connectToServer();
 
   try {
-    const existingStocks = await Stock.find();
+    const existingStocks = await Symbol.find();
     const existingSymbols = existingStocks.map((stock) => stock.symbol);
-    const newStocks = stocks
-      .map((stock) => ({ symbol: stock.symbol, name: stock.name }))
-      .filter((stock) => !existingSymbols.includes(stock.symbol));
+    const newStocks = symbols
+      .map((symbol) => ({ symbol: symbol.symbol, name: symbol.name }))
+      .filter((symbol) => !existingSymbols.includes(symbol.symbol));
 
-    console.log('new stocks', newStocks);
-    const res = await Stock.insertMany(newStocks);
+    console.log('new symbols', newStocks);
+    const res = await Symbol.insertMany(newStocks);
 
-    console.log('Saved stocks list');
+    console.log('Saved symbols list');
 
     disconnectFromServer();
 
@@ -39,4 +39,4 @@ export async function fetchStocksList(): Promise<Array<TwelveData> | undefined> 
   }
 }
 
-fetchStocksList();
+fetchSymbolsList();

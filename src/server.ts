@@ -4,6 +4,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 import { stockRouter } from './routes';
+import { connectToServer } from './utils';
 
 dotenv.config();
 
@@ -11,17 +12,7 @@ const app = express();
 app.use(json());
 app.use(stockRouter);
 
-mongoose.connect(
-  'mongodb://localhost:27017/stock-fundamentals',
-  {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  },
-  () => {
-    console.log('connected af');
-  },
-);
+connectToServer();
 
 app.listen(3000, () => {
   console.log('listening');

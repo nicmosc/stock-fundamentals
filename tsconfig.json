@@ -11,8 +11,8 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false, // revert
+    "noUnusedParameters": false, // revert
     "strict": true,
     "paths": {
       "~/*": ["./src/*"]
