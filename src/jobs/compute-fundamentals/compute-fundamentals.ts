@@ -123,8 +123,6 @@ export async function computeFundamentals() {
       const stockWithStats = computeStock(symbol, rawData!);
       const hasGoodFundamentals = fineFilter(stockWithStats);
 
-      console.log(stockWithStats);
-
       if (hasGoodFundamentals) {
         // Save it or create if it doesnt exist
         const stock = await Stock.findOne({ symbol: stockWithStats.symbol });
