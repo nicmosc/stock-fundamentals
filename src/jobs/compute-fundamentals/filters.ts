@@ -8,16 +8,9 @@ export function coarseFilter(stockData: YahooData): boolean {
     hasEnoughData &&
     cashflowStatement != null &&
     cashflowStatement.length > 0 &&
-    cashflowStatement.some((s) => s.netIncome != null) &&
-    cashflowStatement.some((s) => s.depreciation != null) &&
-    cashflowStatement.some((s) => s.dividendsPaid != null);
+    cashflowStatement.some((s) => s.netIncome != null);
 
-  hasEnoughData =
-    hasEnoughData &&
-    balanceSheet != null &&
-    balanceSheet.length > 0 &&
-    balanceSheet.some((b) => b.totalStockholderEquity != null) &&
-    balanceSheet.some((b) => b.longTermDebt != null);
+  hasEnoughData = hasEnoughData && balanceSheet != null && balanceSheet.length > 0;
 
   hasEnoughData = hasEnoughData && earningsTrend != null && earningsTrend.length > 0;
 
@@ -30,7 +23,6 @@ export function coarseFilter(stockData: YahooData): boolean {
   hasEnoughData =
     hasEnoughData &&
     keyStats != null &&
-    keyStats.forwardEps != null &&
     keyStats.trailingEps != null &&
     keyStats.profitMargins != null;
 
@@ -55,10 +47,10 @@ export function coarseFilter(stockData: YahooData): boolean {
 export function fineFilter(stock: Stock): boolean {
   let hasHealthyStats = true;
 
+  hasHealthyStats = hasHealthyStats && stock.stats.growthRate > 0;
   hasHealthyStats = hasHealthyStats && stock.stats.profitMargin > 0;
   hasHealthyStats = hasHealthyStats && stock.stats.currentPrice > 5; // TODO handle other than USD
   hasHealthyStats = hasHealthyStats && stock.stats.revenueGrowth > 0.1;
-  hasHealthyStats = hasHealthyStats && stock.stats.ROIC > 0.1;
 
   return hasHealthyStats;
 }

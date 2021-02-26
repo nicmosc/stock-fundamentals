@@ -67,15 +67,15 @@ async function getYahooRawData(symbol: string): Promise<YahooData | undefined> {
       earnings: Earnings;
       cashflowStatementHistory: { cashflowStatements: CashflowStatement };
       financialData: FinancialData;
-    } = await getFundamentals('AAPL');
+    } = await getFundamentals(symbol);
 
     const yahooRawData: YahooData = {
       profile: info.assetProfile,
       keyStats: info.defaultKeyStatistics,
-      balanceSheet: fundamentals.balanceSheetHistory.balanceSheetStatements,
-      earningsTrend: fundamentals.earningsTrend.trend,
+      balanceSheet: fundamentals.balanceSheetHistory?.balanceSheetStatements,
+      earningsTrend: fundamentals.earningsTrend?.trend,
       earnings: fundamentals.earnings,
-      cashflowStatement: fundamentals.cashflowStatementHistory.cashflowStatements,
+      cashflowStatement: fundamentals.cashflowStatementHistory?.cashflowStatements,
       financialData: fundamentals.financialData,
     };
     return yahooRawData;
@@ -83,15 +83,6 @@ async function getYahooRawData(symbol: string): Promise<YahooData | undefined> {
     console.error('error', err);
   }
 }
-
-/**
- * Elements taken into account here:
- * - Cash-flow to debt ratio
- * - Free cash flow + below
- * - Free cash flow (%)
- * - ROIC
- * - D/E
- */
 
 export async function computeFundamentals() {
   await connectToServer();
@@ -105,6 +96,7 @@ export async function computeFundamentals() {
       continue;
     } else {
       // Get new data and save it
+      console.log(`Computing data for ${symbol.symbol}`);
       const timeStart = Date.now();
       const rawData = await getYahooRawData(symbol.symbol);
       const timeEnd = Date.now();
@@ -116,11 +108,15 @@ export async function computeFundamentals() {
       const hasEnoughData = rawData != null ? coarseFilter(rawData) : false;
 
       if (!hasEnoughData) {
-        await Symbol.findByIdAndUpdate(symbol, { ignored: true });
+        const stock = await Stock.findOne({ symbol: symbol.symbol });
+        if (stock == null) {
+          await Symbol.findByIdAndUpdate(symbol, { ignored: true });
+        }
         continue;
       }
 
       const stockWithStats = computeStock(symbol, rawData!);
+      console.log(stockWithStats);
       const hasGoodFundamentals = fineFilter(stockWithStats);
 
       if (hasGoodFundamentals) {
@@ -139,7 +135,7 @@ export async function computeFundamentals() {
         }
       } else {
         // If fundamentals are bad, delete if exists
-        // await Stock.findByIdAndDelete(stockWithStats);
+        // await Stock.findOneAndDelete({ symbol: stockWithStats.symbol });
       }
     }
   }

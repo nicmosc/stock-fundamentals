@@ -12,7 +12,7 @@ export interface Stock {
     PE: number;
     debtToEquity?: number;
     FCFYield?: number;
-    ROIC: number;
+    ROIC?: number;
     est10YearEPS: number;
     est10thYearPrice: number;
     currentPrice: number;
