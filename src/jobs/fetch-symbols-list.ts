@@ -1,21 +1,54 @@
-import { Symbol } from '~/models';
-import { TwelveData } from '~/types';
-import { connectToServer, disconnectFromServer } from '~/utils';
+import { uniqBy } from 'lodash';
 
-export const exchanges = ['NYSE', 'NASDAQ', 'XLON', 'EURONEXT', 'TSX', 'XETR', 'OMX', 'XASX'];
+import { Symbol } from '~/models';
+import { Symbol as SymbolType, TwelveData } from '~/types';
+import { connectToServer, disconnectFromServer, getRequest, timeout } from '~/utils';
+
+export const EXCHANGES = ['NYSE', 'NASDAQ', 'XLON', 'EURONEXT', 'TSX', 'XETR', 'OMX', 'XASX'];
+const API_URL = 'https://twelve-data1.p.rapidapi.com/stocks';
+const API_HOST = 'twelve-data1.p.rapidapi.com';
+const REQUEST_DELAY = (60 / 12) * 1000;
+
+async function getFromExchange(exchange: string): Promise<Array<SymbolType>> {
+  try {
+    const { data } = await getRequest(API_URL, API_HOST, {
+      exchange,
+      format: 'json',
+    });
+    return data;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
+async function getAllSymbols(): Promise<Array<SymbolType>> {
+  let allSymbols: Array<SymbolType> = [];
+
+  for (const exchange of EXCHANGES) {
+    const timeStart = Date.now();
+
+    console.log(`Fetching symbols from ${exchange} exchange`);
+    const symbols = await getFromExchange(exchange);
+
+    const timeEnd = Date.now();
+    const timeRemaining = REQUEST_DELAY - (timeEnd - timeStart);
+    if (timeRemaining > 0) {
+      await timeout(timeRemaining); // Required by TwelveData API limits
+    }
+
+    if (symbols.length > 0) {
+      console.log(symbols[0]);
+      allSymbols.push(...symbols);
+    }
+  }
+
+  return uniqBy(uniqBy(allSymbols, 'symbol'), 'name');
+}
 
 export async function fetchSymbolsList(): Promise<Array<TwelveData> | undefined> {
   // get from api
-  const symbols = [
-    { symbol: 'AGFS', name: 'Example 1' },
-    { symbol: 'DBDR', name: 'Example 2' },
-    { symbol: 'TSLA', name: 'Tesla' },
-    { symbol: 'GOOGL', name: 'Google' },
-    { symbol: 'LOGI', name: 'Logitech' },
-    { symbol: 'ETSY', name: 'Etsy' },
-    { symbol: 'ECOWVE', name: 'Example 3' },
-    { symbol: 'SFTR', name: 'Example 4' },
-  ];
+  const symbols = await getAllSymbols();
 
   await connectToServer();
 

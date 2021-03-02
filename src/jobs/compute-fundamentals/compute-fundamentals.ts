@@ -18,7 +18,7 @@ import { coarseFilter, fineFilter } from './filters';
 
 const API_URL = 'https://yahoo-finance15.p.rapidapi.com/api/yahoo';
 const API_HOST = 'yahoo-finance15.p.rapidapi.com';
-
+const REQUEST_DELAY = (60 / 60) * 1000;
 const ONE_MONTH = 1000 * 60 * 60 * 48 * 28;
 
 const enum ApiPath {
@@ -40,14 +40,33 @@ function isOneMonthAgo(date: Date) {
   return new Date().getTime() - ONE_MONTH >= date.getTime();
 }
 
-async function getBasicInfo(stock: string) {
+async function getBasicInfo(
+  stock: string,
+): Promise<
+  | {
+      assetProfile: Profile;
+      defaultKeyStatistics: KeyStats;
+    }
+  | { error: string }
+> {
   const req = await getRequest(urlJoin(API_URL, ApiPath.MODULE, stock), API_HOST, {
     module: [DataPoints.PROFILE, DataPoints.KEY_STATS].join(','),
   });
   return req;
 }
 
-async function getFundamentals(stock: string) {
+async function getFundamentals(
+  stock: string,
+): Promise<
+  | {
+      balanceSheetHistory: { balanceSheetStatements: BalanceSheet };
+      earningsTrend: { trend: EarningsTrend };
+      earnings: Earnings;
+      cashflowStatementHistory: { cashflowStatements: CashflowStatement };
+      financialData: FinancialData;
+    }
+  | { error: string }
+> {
   const req = await getRequest(urlJoin(API_URL, ApiPath.MODULE, stock), API_HOST, {
     module: [
       DataPoints.EARNINGS,
@@ -62,18 +81,13 @@ async function getFundamentals(stock: string) {
 
 async function getYahooRawData(symbol: string): Promise<YahooData | false | undefined> {
   try {
-    const info: {
-      assetProfile: Profile;
-      defaultKeyStatistics: KeyStats;
-    } = await getBasicInfo(symbol);
+    const info = await getBasicInfo(symbol);
+    const fundamentals = await getFundamentals(symbol);
 
-    const fundamentals: {
-      balanceSheetHistory: { balanceSheetStatements: BalanceSheet };
-      earningsTrend: { trend: EarningsTrend };
-      earnings: Earnings;
-      cashflowStatementHistory: { cashflowStatements: CashflowStatement };
-      financialData: FinancialData;
-    } = await getFundamentals(symbol);
+    if ('error' in info || 'error' in fundamentals) {
+      console.error(`Something went wrong fetching ${symbol}`);
+      return false;
+    }
 
     const yahooRawData: YahooData = {
       profile: info.assetProfile,
@@ -108,9 +122,9 @@ export async function computeFundamentals() {
       const timeStart = Date.now();
       const rawData = await getYahooRawData(symbol.symbol);
       const timeEnd = Date.now();
-      const timeUntil1000 = 1000 - (timeEnd - timeStart);
-      if (timeUntil1000 > 0) {
-        await timeout(timeUntil1000); // Required by Yahoo API limits
+      const timeRemaining = REQUEST_DELAY - (timeEnd - timeStart);
+      if (timeRemaining > 0) {
+        await timeout(timeRemaining); // Required by Yahoo API limits
       }
 
       if (rawData === false) {
