@@ -6,13 +6,14 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "ESNext",
+    "target": "ES2019",
+    "lib": ["ES2020", "DOM"],
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false, // revert
+    "noUnusedParameters": false, // revert
     "strict": true,
     "paths": {
       "~/*": ["./src/*"]

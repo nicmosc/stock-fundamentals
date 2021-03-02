@@ -1,9 +1,6 @@
 import mongoose, { Document, Model } from 'mongoose';
 
-interface StockType {
-  ticker: string;
-  companyName?: string;
-}
+import { Stock as StockType } from '../types';
 
 interface StockDocument extends Document, StockType {}
 
@@ -12,13 +9,32 @@ interface StockModelInterface extends Model<StockDocument> {
 }
 
 const stockSchema = new mongoose.Schema({
-  ticker: {
+  symbol: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  name: {
     type: String,
     required: true,
   },
-  companyName: {
-    type: String,
-    required: false,
+  profile: {
+    country: String,
+    industry: String,
+    sector: String,
+  },
+  stats: {
+    revenueGrowth: Number,
+    profitMargin: Number,
+    EPS: Number,
+    growthRate: Number,
+    PE: Number,
+    debtToEquity: Number,
+    FCFYield: Number,
+    ROIC: Number,
+    est10YearEPS: Number,
+    est10thYearPrice: Number,
+    currentPrice: Number,
   },
 });
 
