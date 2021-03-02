@@ -18,10 +18,8 @@ const symbolSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  ignored: {
-    type: Boolean,
-    required: false,
-  },
+  ignored: Boolean,
+  updatedAt: Date,
 });
 
 export const Symbol = mongoose.model<any, SymbolModelInterface>('Symbol', symbolSchema);

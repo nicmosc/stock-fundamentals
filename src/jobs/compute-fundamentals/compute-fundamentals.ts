@@ -19,6 +19,8 @@ import { coarseFilter, fineFilter } from './filters';
 const API_URL = 'https://yahoo-finance15.p.rapidapi.com/api/yahoo';
 const API_HOST = 'yahoo-finance15.p.rapidapi.com';
 
+const ONE_MONTH = 1000 * 60 * 60 * 48 * 28;
+
 const enum ApiPath {
   QUOTE = 'qu/quote',
   MODULE = 'mo/module',
@@ -32,6 +34,10 @@ const enum DataPoints {
   EARNINGS_TREND = 'earnings-trend',
   FINANCIAL_DATA = 'financial-data',
   CASHFLOW_STATEMENT = 'cashflow-statement',
+}
+
+function isOneMonthAgo(date: Date) {
+  return new Date().getTime() - ONE_MONTH >= date.getTime();
 }
 
 async function getBasicInfo(stock: string) {
@@ -54,7 +60,7 @@ async function getFundamentals(stock: string) {
   return req;
 }
 
-async function getYahooRawData(symbol: string): Promise<YahooData | undefined> {
+async function getYahooRawData(symbol: string): Promise<YahooData | false | undefined> {
   try {
     const info: {
       assetProfile: Profile;
@@ -81,6 +87,7 @@ async function getYahooRawData(symbol: string): Promise<YahooData | undefined> {
     return yahooRawData;
   } catch (err) {
     console.error('error', err);
+    return false;
   }
 }
 
@@ -91,8 +98,9 @@ export async function computeFundamentals() {
   if (symbols == null) return;
 
   for (const symbol of symbols) {
-    if (symbol.ignored === true) {
-      // Skip any ignored stocks i.e. for which we have no data
+    if (symbol.ignored === true || (symbol.updatedAt != null && !isOneMonthAgo(symbol.updatedAt))) {
+      // Skip any ignored stocks i.e. for which we have no data, or that were already computed
+      console.log(`Skipping ${symbol.symbol} because ignored, or already updated`);
       continue;
     } else {
       // Get new data and save it
@@ -105,18 +113,22 @@ export async function computeFundamentals() {
         await timeout(timeUntil1000); // Required by Yahoo API limits
       }
 
+      if (rawData === false) {
+        // if something went wrong, skip it
+        continue;
+      }
+
       const hasEnoughData = rawData != null ? coarseFilter(rawData) : false;
 
       if (!hasEnoughData) {
         const stock = await Stock.findOne({ symbol: symbol.symbol });
         if (stock == null) {
-          await Symbol.findByIdAndUpdate(symbol, { ignored: true });
+          await Symbol.findByIdAndUpdate(symbol, { ignored: true, updatedAt: new Date() });
         }
         continue;
       }
 
       const stockWithStats = computeStock(symbol, rawData!);
-      console.log(stockWithStats);
       const hasGoodFundamentals = fineFilter(stockWithStats);
 
       if (hasGoodFundamentals) {
@@ -135,8 +147,10 @@ export async function computeFundamentals() {
         }
       } else {
         // If fundamentals are bad, delete if exists
-        // await Stock.findOneAndDelete({ symbol: stockWithStats.symbol });
+        console.log(`Removing ${symbol.symbol}, fundamentals have worsened`);
+        await Stock.findOneAndDelete({ symbol: stockWithStats.symbol });
       }
+      await Symbol.findByIdAndUpdate(symbol, { updatedAt: new Date() });
     }
   }
 
