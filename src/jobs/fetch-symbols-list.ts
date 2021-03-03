@@ -6,7 +6,7 @@ import { connectToServer, disconnectFromServer, getRequest, timeout } from '~/ut
 
 const exchangeToSymbolMod: Record<typeof EXCHANGES[number], (arg: string) => string> = {
   XLON: (symbol: string) => `${symbol}.L`,
-  XAMS: (symbol: string) => `${symbol}.MS`,
+  XAMS: (symbol: string) => `${symbol}.AS`,
   XBRU: (symbol: string) => `${symbol}.BR`,
   XLIS: (symbol: string) => `${symbol}.LS`,
   XOSL: (symbol: string) => `${symbol}.OL`,
@@ -80,16 +80,6 @@ export async function fetchSymbolsList(): Promise<Array<TwelveData> | undefined>
       }))
       .filter((symbol) => !existingSymbols.includes(symbol.symbol));
 
-    // const res = await Symbol.bulkWrite(
-    //   symbols.map((symbol) => ({
-    //     updateOne: {
-    //       filter: { symbol: symbol.symbol },
-    //       update: { $set: { exchange: symbol.exchange, currency: symbol.currency } },
-    //     },
-    //   })),
-    // );
-
-    // console.log('new symbols', newStocks);
     const res = await Symbol.insertMany(newStocks);
 
     console.log('Saved symbols list');
