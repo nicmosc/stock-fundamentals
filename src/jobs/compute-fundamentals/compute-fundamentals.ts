@@ -22,10 +22,7 @@ const API_HOST = 'yahoo-finance15.p.rapidapi.com';
 const REQUEST_DELAY = (60 / 100) * 1000;
 const ONE_MONTH = 1000 * 60 * 60 * 48 * 28;
 
-const enum ApiPath {
-  QUOTE = 'qu/quote',
-  MODULE = 'mo/module',
-}
+const API_PATH = 'mo/module';
 
 const enum DataPoints {
   PROFILE = 'asset-profile',
@@ -50,7 +47,7 @@ async function getBasicInfo(
     }
   | { error: string }
 > {
-  const req = await getRequest(urlJoin(API_URL, ApiPath.MODULE, stock), API_HOST, {
+  const req = await getRequest(urlJoin(API_URL, API_PATH, stock), API_HOST, {
     module: [DataPoints.PROFILE, DataPoints.EARNINGS].join(','),
   });
   return req;
@@ -68,7 +65,7 @@ async function getFundamentals(
     }
   | { error: string }
 > {
-  const req = await getRequest(urlJoin(API_URL, ApiPath.MODULE, stock), API_HOST, {
+  const req = await getRequest(urlJoin(API_URL, API_PATH, stock), API_HOST, {
     module: [
       DataPoints.KEY_STATS,
       DataPoints.BALANCE_SHEET,
