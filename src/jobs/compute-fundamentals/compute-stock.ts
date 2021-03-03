@@ -1,4 +1,12 @@
-import { BalanceSheet, CashflowStatement, EarningsTrend, Stock, Symbol, YahooData } from '~/types';
+import {
+  BalanceSheet,
+  CashflowStatement,
+  EarningsTrend,
+  PartialYahooData,
+  Stock,
+  Symbol,
+  YahooData,
+} from '~/types';
 
 function computeFCF(cfs: CashflowStatement[0]): number | undefined {
   if (cfs.totalCashFromOperatingActivities == null || cfs.capitalExpenditures == null) {
@@ -48,7 +56,7 @@ function getGrowthRate(computed: number | undefined, estimated: number | undefin
   return estimated ?? computed ?? 0;
 }
 
-export function computeStock(symbol: Symbol, data: YahooData): Stock {
+export function computeStock(symbol: Symbol, data: PartialYahooData): Omit<Stock, 'profile'> {
   const FCF = data.financialData?.freeCashFlow?.raw ?? computeFCF(data.cashflowStatement![0]);
   const totalCapitalization = computeTotalCapitalization(data.balanceSheet![0]);
   const FCFYield =
@@ -82,11 +90,11 @@ export function computeStock(symbol: Symbol, data: YahooData): Stock {
   return {
     symbol: symbol.symbol,
     name: symbol.name,
-    profile: {
-      country: data.profile.country,
-      sector: data.profile.sector,
-      industry: data.profile.industry,
-    },
+    // profile: {
+    //   country: data.profile.country,
+    //   sector: data.profile.sector,
+    //   industry: data.profile.industry,
+    // },
     stats: {
       revenueGrowth: data.financialData!.revenueGrowth!.raw,
       PE,

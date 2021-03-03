@@ -8,8 +8,9 @@ import {
   EarningsTrend,
   FinancialData,
   KeyStats,
+  PartialYahooData,
   Profile,
-  YahooData,
+  Stock as StockType,
 } from '~/types';
 import { connectToServer, disconnectFromServer, getRequest, timeout } from '~/utils';
 
@@ -18,7 +19,7 @@ import { coarseFilter, fineFilter } from './filters';
 
 const API_URL = 'https://yahoo-finance15.p.rapidapi.com/api/yahoo';
 const API_HOST = 'yahoo-finance15.p.rapidapi.com';
-const REQUEST_DELAY = (60 / 60) * 1000;
+const REQUEST_DELAY = (60 / 100) * 1000;
 const ONE_MONTH = 1000 * 60 * 60 * 48 * 28;
 
 const enum ApiPath {
@@ -45,12 +46,12 @@ async function getBasicInfo(
 ): Promise<
   | {
       assetProfile: Profile;
-      defaultKeyStatistics: KeyStats;
+      earnings: Earnings;
     }
   | { error: string }
 > {
   const req = await getRequest(urlJoin(API_URL, ApiPath.MODULE, stock), API_HOST, {
-    module: [DataPoints.PROFILE, DataPoints.KEY_STATS].join(','),
+    module: [DataPoints.PROFILE, DataPoints.EARNINGS].join(','),
   });
   return req;
 }
@@ -61,7 +62,7 @@ async function getFundamentals(
   | {
       balanceSheetHistory: { balanceSheetStatements: BalanceSheet };
       earningsTrend: { trend: EarningsTrend };
-      earnings: Earnings;
+      defaultKeyStatistics: KeyStats;
       cashflowStatementHistory: { cashflowStatements: CashflowStatement };
       financialData: FinancialData;
     }
@@ -69,7 +70,7 @@ async function getFundamentals(
 > {
   const req = await getRequest(urlJoin(API_URL, ApiPath.MODULE, stock), API_HOST, {
     module: [
-      DataPoints.EARNINGS,
+      DataPoints.KEY_STATS,
       DataPoints.BALANCE_SHEET,
       DataPoints.EARNINGS_TREND,
       DataPoints.FINANCIAL_DATA,
@@ -79,22 +80,22 @@ async function getFundamentals(
   return req;
 }
 
-async function getYahooRawData(symbol: string): Promise<YahooData | false | undefined> {
+async function getYahooRawData(symbol: string): Promise<PartialYahooData | false | undefined> {
   try {
-    const info = await getBasicInfo(symbol);
+    // const info = await getBasicInfo(symbol);
     const fundamentals = await getFundamentals(symbol);
 
-    if ('error' in info || 'error' in fundamentals) {
+    if ('error' in fundamentals) {
       console.error(`Something went wrong fetching ${symbol}`);
       return false;
     }
 
-    const yahooRawData: YahooData = {
-      profile: info.assetProfile,
-      keyStats: info.defaultKeyStatistics,
+    const yahooRawData: PartialYahooData = {
+      // profile: info.assetProfile,
+      keyStats: fundamentals.defaultKeyStatistics,
       balanceSheet: fundamentals.balanceSheetHistory?.balanceSheetStatements,
       earningsTrend: fundamentals.earningsTrend?.trend,
-      earnings: fundamentals.earnings,
+      // earnings: info.earnings,
       cashflowStatement: fundamentals.cashflowStatementHistory?.cashflowStatements,
       financialData: fundamentals.financialData,
     };
@@ -128,7 +129,8 @@ export async function computeFundamentals() {
       }
 
       if (rawData === false) {
-        // if something went wrong, skip it
+        // if something went wrong, ignore it, and skip
+        await Symbol.findByIdAndUpdate(symbol, { ignored: true, updatedAt: new Date() });
         continue;
       }
 
@@ -146,22 +148,38 @@ export async function computeFundamentals() {
       const hasGoodFundamentals = fineFilter(stockWithStats);
 
       if (hasGoodFundamentals) {
+        // Get extra info
+        const info = await getBasicInfo(symbol.symbol);
+        if ('error' in info) {
+          console.error(`Something went wrong fetching ${symbol}'s basic data`);
+          continue;
+        }
+
+        const stockWithInfo: StockType = {
+          ...stockWithStats,
+          profile: {
+            country: info.assetProfile.country,
+            sector: info.assetProfile.sector,
+            industry: info.assetProfile.industry,
+          },
+        };
+
         // Save it or create if it doesnt exist
-        const stock = await Stock.findOne({ symbol: stockWithStats.symbol });
+        const stock = await Stock.findOne({ symbol: stockWithInfo.symbol });
         if (stock != null) {
-          await Stock.findByIdAndUpdate(stock, stockWithStats);
+          await Stock.findByIdAndUpdate(stock, stockWithInfo);
         } else {
           try {
-            await Stock.create(stockWithStats);
+            await Stock.create(stockWithInfo);
           } catch (error) {
             console.error(
-              `Invalid data. Could not save stock ${stockWithStats.symbol} (${stockWithStats.name})`,
+              `Invalid data. Could not save stock ${stockWithInfo.symbol} (${stockWithInfo.name})`,
             );
           }
         }
       } else {
         // If fundamentals are bad, delete if exists
-        console.log(`Removing ${symbol.symbol}, fundamentals have worsened`);
+        console.log(`Removing ${symbol.symbol}, fundamentals are bad`);
         await Stock.findOneAndDelete({ symbol: stockWithStats.symbol });
       }
       await Symbol.findByIdAndUpdate(symbol, { updatedAt: new Date() });

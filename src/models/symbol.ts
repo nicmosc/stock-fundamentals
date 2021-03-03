@@ -18,6 +18,15 @@ const symbolSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  exchange: {
+    type: String,
+    required: true,
+  },
+  currency: {
+    type: String,
+    required: true,
+  },
+  rawSymbol: String,
   ignored: Boolean,
   updatedAt: Date,
 });

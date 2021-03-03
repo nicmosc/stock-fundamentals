@@ -60,3 +60,5 @@ export interface YahooData {
   cashflowStatement?: CashflowStatement;
   financialData?: FinancialData;
 }
+
+export type PartialYahooData = Omit<YahooData, 'profile' | 'earnings'>;

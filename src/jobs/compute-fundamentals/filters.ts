@@ -1,6 +1,6 @@
-import { Stock, YahooData } from '~/types';
+import { PartialYahooData, Stock } from '~/types';
 
-export function coarseFilter(stockData: YahooData): boolean {
+export function coarseFilter(stockData: PartialYahooData): boolean {
   const { cashflowStatement, balanceSheet, financialData, earningsTrend, keyStats } = stockData;
   let hasEnoughData = true;
 
@@ -44,7 +44,7 @@ export function coarseFilter(stockData: YahooData): boolean {
  * - Share price > $3
  */
 
-export function fineFilter(stock: Stock): boolean {
+export function fineFilter(stock: Omit<Stock, 'profile'>): boolean {
   let hasHealthyStats = true;
 
   hasHealthyStats = hasHealthyStats && stock.stats.growthRate > 0;
