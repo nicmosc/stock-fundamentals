@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 
 import { backup } from './backup';
+import { jobsScheduler } from './jobs-scheduler';
 import { stockRouter } from './routes';
 import { connectToServer } from './utils';
 
@@ -24,7 +25,8 @@ app.listen(port, () => {
   console.log(`Server Started in ${process.env.NODE_ENV} mode on port ${port}`);
 
   if (isProduction) {
-    // Startup backup + upload tasks
+    // Startup backup + scheduled tasks
     backup();
+    jobsScheduler();
   }
 });

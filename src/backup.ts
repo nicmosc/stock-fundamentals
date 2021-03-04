@@ -40,9 +40,9 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
   });
 };
 
-export async function backup() {
-  // Backup everyday @1:AM
-  cron.schedule('* * * * *', async () => {
+export function backup() {
+  // Backup everyday @01:00
+  cron.schedule('0 1 * * *', () => {
     try {
       // Backup mongo dump
       execSync(`mongodump --uri ${process.env.MONGODB_URI}`);
