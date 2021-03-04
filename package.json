@@ -52,6 +52,7 @@
     "mongoose": "^5.11.17",
     "node-cron": "^2.0.3",
     "node-fetch": "^2.6.1",
+    "ts-node": "^9.1.1",
     "url-join": "^4.0.1"
   }
 }
