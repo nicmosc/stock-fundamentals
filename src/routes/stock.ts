@@ -4,10 +4,6 @@ import { Stock } from '../models';
 
 const router = express.Router();
 
-router.get('/api/stock', (_, res: Response) => {
-  return res.send('stock');
-});
-
 router.get('/api/stocks', async (_, res: Response) => {
   const stocks = await Stock.find();
   return res.status(200).send(stocks);

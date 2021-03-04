@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export function connectToServer() {
   return mongoose.connect(
-    'mongodb://localhost:27017/stock-fundamentals',
+    process.env.MONGODB_URI!,
     {
       useCreateIndex: true,
       useNewUrlParser: true,

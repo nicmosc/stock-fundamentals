@@ -1,7 +1,6 @@
 import { json } from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
-import mongoose from 'mongoose';
 
 import { stockRouter } from './routes';
 import { connectToServer } from './utils';
