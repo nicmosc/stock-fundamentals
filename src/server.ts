@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { json } from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -15,6 +17,7 @@ const app = express();
 app.use(json());
 app.use(cors());
 app.use(stockRouter);
+app.use(express.static(path.join(__dirname, './dump/stocks-fundamentals')));
 
 const port = process.env.PORT || 8080;
 const isProduction = process.env.NODE_ENV === 'production';
