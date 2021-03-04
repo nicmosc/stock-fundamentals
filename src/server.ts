@@ -1,4 +1,5 @@
 import { json } from 'body-parser';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
@@ -8,11 +9,21 @@ import { connectToServer } from './utils';
 dotenv.config();
 
 const app = express();
+
 app.use(json());
+app.use(cors());
 app.use(stockRouter);
 
-connectToServer();
+const port = process.env.PORT || 8080;
+const isProduction = process.env.NODE_ENV === 'production';
 
-app.listen(3000, () => {
-  console.log('listening');
+app.listen(port, () => {
+  connectToServer();
+
+  console.log(`Server Started in ${process.env.NODE_ENV} mode on port ${port}`);
+
+  if (isProduction) {
+    // Startup backup + upload tasks
+    // mongodumbBackup();
+  }
 });

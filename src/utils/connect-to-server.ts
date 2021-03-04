@@ -10,7 +10,7 @@ export function connectToServer() {
       useFindAndModify: false,
     },
     () => {
-      console.log('connected af');
+      console.log('Connected to MongoDB at ' + process.env.MONGODB_URI);
     },
   );
 }
