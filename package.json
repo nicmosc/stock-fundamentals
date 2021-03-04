@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint --ext ts --format node_modules/eslint-formatter-pretty src/",
-    "start": "ts-node -r tsconfig-paths/register src/server.ts",
+    "start": "ts-node --max_old_space_size=2560 -r tsconfig-paths/register src/server.ts",
     "dev": "ts-node-dev src/server.ts"
   },
   "keywords": [],
