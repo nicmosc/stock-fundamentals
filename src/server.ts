@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
+import { backup } from './backup';
 import { stockRouter } from './routes';
 import { connectToServer } from './utils';
 
@@ -24,6 +25,6 @@ app.listen(port, () => {
 
   if (isProduction) {
     // Startup backup + upload tasks
-    // mongodumbBackup();
+    backup();
   }
 });

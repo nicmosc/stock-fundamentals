@@ -3,14 +3,15 @@
   "env": {
     "API_KEY": {
       "description": "Connect to the RapidAPI endpoints"
-      
     },
     "MONGODB_URI": {
       "description": "Connect to the MongoDB store"
     },
     "NODE_ENV": {
       "value": "production"
-    }
+    },
+    "AWS_SECRET_ACCESS_KEY": {},
+    "AWS_ACCESS_KEY_ID": {}
   },
   "image": "heroku/nodejs",
   "buildpacks": [
