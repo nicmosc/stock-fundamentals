@@ -1,4 +1,4 @@
-import { PartialYahooData, Stock } from '~/types';
+import { PartialYahooData, Stock } from '../../types';
 
 export function coarseFilter(stockData: PartialYahooData): boolean {
   const { cashflowStatement, balanceSheet, financialData, earningsTrend, keyStats } = stockData;

@@ -1,6 +1,6 @@
 import urlJoin from 'url-join';
 
-import { Stock, Symbol } from '~/models';
+import { Stock, Symbol } from '../../models';
 import {
   BalanceSheet,
   CashflowStatement,
@@ -11,9 +11,8 @@ import {
   PartialYahooData,
   Profile,
   Stock as StockType,
-} from '~/types';
-import { connectToServer, disconnectFromServer, getRequest, timeout } from '~/utils';
-
+} from '../../types';
+import { connectToServer, disconnectFromServer, getRequest, timeout } from '../../utils';
 import { computeStock } from './compute-stock';
 import { coarseFilter, fineFilter } from './filters';
 

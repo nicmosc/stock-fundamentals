@@ -5,8 +5,7 @@ import {
   PartialYahooData,
   Stock,
   Symbol,
-  YahooData,
-} from '~/types';
+} from '../../types';
 
 function computeFCF(cfs: CashflowStatement[0]): number | undefined {
   if (cfs.totalCashFromOperatingActivities == null || cfs.capitalExpenditures == null) {

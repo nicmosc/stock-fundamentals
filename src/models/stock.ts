@@ -1,14 +1,10 @@
-import mongoose, { Document, Model } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 import { Stock as StockType } from '../types';
 
 interface StockDocument extends Document, StockType {}
 
-interface StockModelInterface extends Model<StockDocument> {
-  make(attr: StockType): StockDocument;
-}
-
-const stockSchema = new mongoose.Schema({
+const stockSchema: Schema = new mongoose.Schema({
   symbol: {
     type: String,
     required: true,
@@ -38,8 +34,4 @@ const stockSchema = new mongoose.Schema({
   },
 });
 
-export const Stock = mongoose.model<any, StockModelInterface>('Stock', stockSchema);
-
-stockSchema.statics.make = (attr: StockType) => {
-  return new Stock(attr);
-};
+export const Stock = mongoose.model<StockDocument>('Stock', stockSchema);

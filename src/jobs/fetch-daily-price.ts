@@ -1,8 +1,8 @@
 import { chunk } from 'lodash';
 import urlJoin from 'url-join';
 
-import { Stock } from '~/models';
-import { connectToServer, disconnectFromServer, getRequest, timeout } from '~/utils';
+import { Stock } from '../models';
+import { connectToServer, disconnectFromServer, getRequest, timeout } from '../utils';
 
 const API_URL = 'https://yahoo-finance15.p.rapidapi.com/api/yahoo';
 const API_HOST = 'yahoo-finance15.p.rapidapi.com';

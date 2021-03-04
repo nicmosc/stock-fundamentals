@@ -1,8 +1,8 @@
 import { uniqBy } from 'lodash';
 
-import { Symbol } from '~/models';
-import { EXCHANGES, Symbol as SymbolType, TwelveData } from '~/types';
-import { connectToServer, disconnectFromServer, getRequest, timeout } from '~/utils';
+import { Symbol } from '../models';
+import { EXCHANGES, Symbol as SymbolType, TwelveData } from '../types';
+import { connectToServer, disconnectFromServer, getRequest, timeout } from '../utils';
 
 const exchangeToSymbolMod: Record<typeof EXCHANGES[number], (arg: string) => string> = {
   XLON: (symbol: string) => `${symbol}.L`,

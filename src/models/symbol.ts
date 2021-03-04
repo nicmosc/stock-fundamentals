@@ -1,14 +1,10 @@
-import mongoose, { Document, Model } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 import { Symbol as SymbolType } from '../types';
 
 interface SymbolDocument extends Document, SymbolType {}
 
-interface SymbolModelInterface extends Model<SymbolDocument> {
-  make(attr: SymbolType): SymbolDocument;
-}
-
-const symbolSchema = new mongoose.Schema({
+const symbolSchema: Schema = new mongoose.Schema({
   symbol: {
     type: String,
     required: true,
@@ -31,8 +27,4 @@ const symbolSchema = new mongoose.Schema({
   updatedAt: Date,
 });
 
-export const Symbol = mongoose.model<any, SymbolModelInterface>('Symbol', symbolSchema);
-
-symbolSchema.statics.make = (attr: SymbolType) => {
-  return new Symbol(attr);
-};
+export const Symbol = mongoose.model<SymbolDocument>('Symbol', symbolSchema);
