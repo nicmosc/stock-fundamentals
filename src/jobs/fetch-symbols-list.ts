@@ -40,7 +40,7 @@ async function getAllSymbols(): Promise<Array<SymbolType>> {
   for (const exchange of EXCHANGES) {
     const timeStart = Date.now();
 
-    console.log(`Fetching symbols from ${exchange} exchange`);
+    console.log(`Fetching symbols from ${exchange} exchange...`);
     const symbols = await getFromExchange(exchange);
 
     const timeEnd = Date.now();
@@ -59,7 +59,6 @@ async function getAllSymbols(): Promise<Array<SymbolType>> {
 }
 
 export async function fetchSymbolsList(): Promise<Array<TwelveData> | undefined> {
-  // get from api
   const symbols = await getAllSymbols();
 
   await connectToServer();
@@ -92,4 +91,4 @@ export async function fetchSymbolsList(): Promise<Array<TwelveData> | undefined>
   }
 }
 
-fetchSymbolsList();
+// fetchSymbolsList();

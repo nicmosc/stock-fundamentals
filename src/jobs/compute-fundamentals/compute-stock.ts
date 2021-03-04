@@ -90,11 +90,6 @@ export function computeStock(symbol: Symbol, data: PartialYahooData): Omit<Stock
   return {
     symbol: symbol.symbol,
     name: symbol.name,
-    // profile: {
-    //   country: data.profile.country,
-    //   sector: data.profile.sector,
-    //   industry: data.profile.industry,
-    // },
     stats: {
       revenueGrowth: data.financialData!.revenueGrowth!.raw,
       PE,

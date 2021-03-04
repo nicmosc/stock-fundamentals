@@ -1,14 +1,20 @@
 import cron from 'node-cron';
 
-import { fetchDailyPrice } from './jobs';
+import { computeFundamentals, fetchDailyPrice, fetchSymbolsList } from './jobs';
 
 export function jobsScheduler() {
   // Schedule daily price updates @18:00
-  // cron.schedule('0 18 * * *', () => {
-  cron.schedule('*/2 * * * *', () => {
+  console.log('Daily Price schedule active...');
+  cron.schedule('0 18 * * *', () => {
     fetchDailyPrice();
   });
 
   // Schedule quarterly fundamentals
-  cron.schedule('0 0 1 */3 *', () => {});
+  console.log('Quarterly Fundamentals schedule active...');
+  cron.schedule('0 0 1 */3 *', async () => {
+    const res = await fetchSymbolsList();
+    if (res != null) {
+      computeFundamentals();
+    }
+  });
 }

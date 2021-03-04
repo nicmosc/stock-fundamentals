@@ -28,6 +28,8 @@ export async function fetchDailyPrice() {
   const stocks = await Stock.find();
   const chunks = chunk(stocks, 50);
 
+  console.log('Fetching daily prices...');
+
   for (const chunk of chunks) {
     const timeStart = Date.now();
 
@@ -49,7 +51,9 @@ export async function fetchDailyPrice() {
     );
   }
 
+  console.log('Finished updated stock prices');
+
   disconnectFromServer();
 }
 
-fetchDailyPrice();
+// fetchDailyPrice();

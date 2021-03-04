@@ -186,4 +186,4 @@ export async function computeFundamentals() {
   disconnectFromServer();
 }
 
-computeFundamentals();
+// computeFundamentals();
