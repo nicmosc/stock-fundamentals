@@ -19,6 +19,10 @@
   "lint-staged": {
     "*.{ts}": "eslint --format node_modules/eslint-formatter-pretty --max-warnings=0"
   },
+  "engines": {
+    "node": "12.x",
+    "npm": "6.x"
+  },
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
     "@types/cors": "^2.8.10",
