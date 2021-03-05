@@ -13,7 +13,7 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   });
 
-  console.log('uploading to S3...');
+  console.log('Uploading to S3...');
 
   // File
   const fileStream = fs.createReadStream(`${filePath}${fileName}`);

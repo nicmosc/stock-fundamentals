@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "lint": "eslint --ext ts --format node_modules/eslint-formatter-pretty src/",
+    "lint": "eslint 'src/**/*.ts' -c .eslintrc.js",
+    "format": "prettier --write \"src/**/*.{ts}\"",
     "start": "node index.js",
     "dev": "ts-node-dev src/server.ts",
     "build": "tsc",
@@ -18,7 +19,7 @@
     }
   },
   "lint-staged": {
-    "*.{ts}": "eslint --format node_modules/eslint-formatter-pretty --max-warnings=0"
+    "*.ts": "eslint --format node_modules/eslint-formatter-pretty --max-warnings=0"
   },
   "engines": {
     "node": "12.x",
@@ -36,7 +37,7 @@
     "@typescript-eslint/parser": "^4.15.2",
     "eslint": "^7.20.0",
     "eslint-formatter-pretty": "^4.0.0",
-    "husky": "^5.1.1",
+    "husky": "^4.3.8",
     "import-sort-style-local": "^1.0.0",
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
