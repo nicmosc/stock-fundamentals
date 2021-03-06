@@ -1,10 +1,12 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
+import path from 'path';
 
 import aws from 'aws-sdk';
 import cron from 'node-cron';
+import urlJoin from 'url-join';
 
-// import path from 'path';
+export const BACKUP_PATH = '../dump/stock-fundamentals';
 
 const uploadFile = async (filePath: string, fileName: string, targetFolder: string) => {
   // S3 upload
@@ -18,7 +20,7 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
   console.log(`Uploading ${fileName} to S3...`);
 
   // File
-  const fileStream = fs.createReadStream(`${filePath}/${fileName}`);
+  const fileStream = fs.createReadStream(urlJoin(filePath, fileName));
 
   fileStream.on('error', (fsErr) => {
     console.log('File Error', fsErr);
@@ -27,7 +29,7 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
   // Payload
   const uploadParams = {
     Bucket: 'stock-fundamentals-backups',
-    Key: `${targetFolder}/${fileName}`,
+    Key: urlJoin(targetFolder, fileName),
     Body: fileStream,
   };
 
@@ -45,7 +47,7 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
 export function backup() {
   // Backup everyday @01:00
   console.log('Daily backup schedule active...');
-  // cron.schedule('0 9 * * *', () => {
+  // cron.schedule('0 1 * * *', () => {
   cron.schedule('*/2 * * * *', () => {
     try {
       // Backup mongo dump
@@ -58,8 +60,8 @@ export function backup() {
         '0',
       )}-${String(today.getDay()).padStart(2, '0')}`;
 
-      uploadFile('/dump/stock-fundamentals', 'symbols.bson', targetFolder);
-      uploadFile('/dump/stock-fundamentals', 'stocks.bson', targetFolder);
+      uploadFile(path.join(__dirname, BACKUP_PATH), 'symbols.bson', targetFolder);
+      uploadFile(path.join(__dirname, BACKUP_PATH), 'stocks.bson', targetFolder);
     } catch (err) {
       console.error('Something went wrong backing up the database: ', err);
     }

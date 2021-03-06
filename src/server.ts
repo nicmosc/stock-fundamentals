@@ -1,11 +1,11 @@
-// import path from 'path';
+import path from 'path';
 
 import { json } from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-// import { backup } from './backup';
+import { BACKUP_PATH, backup } from './backup';
 import { jobsScheduler } from './jobs-scheduler';
 import { stockRouter, symbolRouter } from './routes';
 import { connectToServer } from './utils';
@@ -18,7 +18,7 @@ app.use(json());
 app.use(cors());
 app.use(stockRouter);
 app.use(symbolRouter);
-app.use(express.static('/dump/stock-fundamentals/'));
+app.use(express.static(path.join(__dirname, BACKUP_PATH)));
 
 const port = process.env.PORT || 8080;
 const isProduction = process.env.NODE_ENV === 'production';
@@ -30,7 +30,7 @@ app.listen(port, () => {
 
   if (isProduction) {
     // Startup backup + scheduled tasks
-    // backup();
+    backup();
     jobsScheduler();
   }
 });
