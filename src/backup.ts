@@ -48,7 +48,7 @@ export function backup() {
   cron.schedule('*/2 * * * *', () => {
     try {
       // Backup mongo dump
-      execSync(`mongodump --uri ${process.env.MONGODB_URI}`);
+      execSync(`mongodump --verbose --uri ${process.env.MONGODB_URI}`);
       console.log('Mongo Backup created');
 
       const today = new Date();
