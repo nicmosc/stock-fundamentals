@@ -7,7 +7,7 @@ import express from 'express';
 
 import { backup } from './backup';
 import { jobsScheduler } from './jobs-scheduler';
-import { stockRouter } from './routes';
+import { stockRouter, symbolRouter } from './routes';
 import { connectToServer } from './utils';
 
 dotenv.config();
@@ -17,6 +17,7 @@ const app = express();
 app.use(json());
 app.use(cors());
 app.use(stockRouter);
+app.use(symbolRouter);
 app.use(express.static(path.join(__dirname, './dump/stocks-fundamentals')));
 
 const port = process.env.PORT || 8080;
