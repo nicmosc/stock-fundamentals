@@ -16,7 +16,7 @@
   "image": "heroku/nodejs",
   "buildpacks": [
     {
-      "url": "https://github.com/uhray/heroku-buildpack-mongo.git"
+      "url": "http://github.com/uhray/heroku-buildpack-mongo.git"
     },
     {
       "url": "heroku/nodejs"
