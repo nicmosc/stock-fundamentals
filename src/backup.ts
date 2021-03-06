@@ -1,9 +1,9 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
-import path from 'path';
 
 import aws from 'aws-sdk';
 import cron from 'node-cron';
+// import path from 'path';
 
 const uploadFile = async (filePath: string, fileName: string, targetFolder: string) => {
   // S3 upload
@@ -17,7 +17,7 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
   console.log(`Uploading ${fileName} to S3...`);
 
   // File
-  const fileStream = fs.createReadStream(`${filePath}${fileName}`);
+  const fileStream = fs.createReadStream(`${filePath}/${fileName}`);
 
   fileStream.on('error', (fsErr) => {
     console.log('File Error', fsErr);
@@ -57,8 +57,8 @@ export function backup() {
         '0',
       )}-${String(today.getDay()).padStart(2, '0')}`;
 
-      uploadFile(path.join(__dirname, './dump/stock-fundamentals/'), 'symbols.bson', targetFolder);
-      uploadFile(path.join(__dirname, './dump/stock-fundamentals/'), 'stocks.bson', targetFolder);
+      uploadFile('/dump/stock-fundamentals', 'symbols.bson', targetFolder);
+      uploadFile('/dump/stock-fundamentals', 'stocks.bson', targetFolder);
     } catch (err) {
       console.error('Something went wrong backing up the database: ', err);
     }
