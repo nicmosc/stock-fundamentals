@@ -5,7 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { backup } from './backup';
+// import { backup } from './backup';
 import { jobsScheduler } from './jobs-scheduler';
 import { stockRouter, symbolRouter } from './routes';
 import { connectToServer } from './utils';
@@ -30,7 +30,7 @@ app.listen(port, () => {
 
   if (isProduction) {
     // Startup backup + scheduled tasks
-    backup();
+    // backup();
     jobsScheduler();
   }
 });
