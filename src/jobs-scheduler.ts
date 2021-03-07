@@ -5,7 +5,7 @@ import { computeFundamentals, fetchDailyPrice, fetchSymbolsList } from './jobs';
 export function jobsScheduler() {
   // Schedule daily price updates @18:00
   console.log('Daily Price schedule active...');
-  const price = new CronJob('10 10 * * *', () => {
+  const price = new CronJob('0 18 * * *', () => {
     fetchDailyPrice();
   });
 
