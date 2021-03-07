@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import aws from 'aws-sdk';
-import cron from 'node-cron';
+import { CronJob } from 'cron';
 import urlJoin from 'url-join';
 
 export const BACKUP_PATH = '../dump/stock-fundamentals';
@@ -47,7 +47,7 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
 export function backup() {
   // Backup everyday @01:00
   console.log('Daily backup schedule active...');
-  cron.schedule('0 1 * * *', () => {
+  const backup = new CronJob('0 1 * * *', () => {
     try {
       // Backup mongo dump
       execSync(`mongodump --verbose --uri ${process.env.MONGODB_URI}`);
@@ -65,4 +65,6 @@ export function backup() {
       console.error('Something went wrong backing up the database: ', err);
     }
   });
+
+  backup.start();
 }
