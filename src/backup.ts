@@ -45,19 +45,19 @@ const uploadFile = async (filePath: string, fileName: string, targetFolder: stri
 };
 
 export function backup() {
-  // Backup everyday @01:00
+  // Backup everyday @03:00
   console.log('Daily backup schedule active...');
-  const backup = new CronJob('0 1 * * *', () => {
+  const backup = new CronJob('0 3 * * *', () => {
     try {
       // Backup mongo dump
       execSync(`mongodump --verbose --uri ${process.env.MONGODB_URI}`);
       console.log('Mongo Backup created');
 
       const today = new Date();
-      const targetFolder = `${today.getFullYear()}-${String(today.getMonth()).padStart(
+      const targetFolder = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
         2,
         '0',
-      )}-${String(today.getDay()).padStart(2, '0')}`;
+      )}-${String(today.getDate()).padStart(2, '0')}`;
 
       uploadFile(path.join(__dirname, BACKUP_PATH), 'symbols.bson', targetFolder);
       uploadFile(path.join(__dirname, BACKUP_PATH), 'stocks.bson', targetFolder);
