@@ -11,7 +11,7 @@ export function jobsScheduler() {
 
   // Schedule quarterly fundamentals
   console.log('Quarterly Fundamentals schedule active...');
-  const fundamentals = new CronJob('*/2 * * * *', async () => {
+  const fundamentals = new CronJob('0 0 1 */3 *', async () => {
     const res = await fetchSymbolsList();
     if (res != null) {
       computeFundamentals();
