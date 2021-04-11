@@ -2,7 +2,7 @@ import { uniqBy } from 'lodash';
 
 import { Symbol } from '../models';
 import { EXCHANGES, Symbol as SymbolType, TwelveData } from '../types';
-import { connectToServer, disconnectFromServer, getRequest, timeout } from '../utils';
+import { connectToServer, getRequest, timeout } from '../utils';
 
 const exchangeToSymbolMod: Record<typeof EXCHANGES[number], (arg: string) => string> = {
   XLON: (symbol: string) => `${symbol}.L`,
@@ -82,8 +82,6 @@ export async function fetchSymbolsList(): Promise<Array<TwelveData> | undefined>
     const res = await Symbol.insertMany(newStocks);
 
     console.log('Saved symbols list');
-
-    disconnectFromServer();
 
     return res;
   } catch (error) {
